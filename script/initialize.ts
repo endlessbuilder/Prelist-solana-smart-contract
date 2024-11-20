@@ -10,20 +10,25 @@ const feeWallet = new PublicKey("28N6ikf1wVNvrJZdzMQY8bgnu8uha9NnUttawk42DzA3");
 
 const initialize = async () => {
 
-    const platformParams = {
-        owner: owner.publicKey,
-        feeInBps,
-        totalSupply,
-        virtualSol,
-        targetPoolBalance,
-        feeWallet
-    };
+    try {
+        const platformParams = {
+            owner: owner.publicKey,
+            feeInBps,
+            totalSupply,
+            virtualSol,
+            targetPoolBalance,
+            feeWallet
+        };
 
-    await program.methods.initialize(platformParams).accounts({}).signers([owner]).rpc();
+        await program.methods.initialize(platformParams).accounts({}).signers([owner]).rpc();
 
-    const account = await program.account.platform.fetch(platformKeypair.toBase58());
+        const account = await program.account.platform.fetch(platformKeypair.toBase58());
 
-    console.log(">>> platform account : ", account.feeWallet.toBase58());
+        console.log(">>> platform account : ", account.feeWallet.toBase58());
+
+    } catch (error) {
+        console.log(">>> error : ", error);
+    }
 
 }
 

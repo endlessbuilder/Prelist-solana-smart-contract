@@ -25,5 +25,5 @@ address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
-initialize = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/initialization.test.ts"
-createToken = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/createToken.test.ts"
+initialize = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/initialize.ts"
+createToken = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/createToken.ts"
