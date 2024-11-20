@@ -45,3 +45,10 @@ pub struct CreateTokenParams {
     pub symbol: String,
     pub uri: String,
 }
+
+#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
+pub struct SetTokenInfoParams {
+    pub name: String,
+    pub symbol: String,
+    pub uri: String,
+}
