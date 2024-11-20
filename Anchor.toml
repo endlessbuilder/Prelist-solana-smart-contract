@@ -1,0 +1,28 @@
+[toolchain]
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+solana_pump_fun = "FhX8xc2ZjZ7byDuNSi1Jvctr8tgwPLd6859HhNSh38Rk"
+
+[programs.devnet]
+solana_pump_fun = "FhX8xc2ZjZ7byDuNSi1Jvctr8tgwPLd6859HhNSh38Rk"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "https://devnet.helius-rpc.com/?api-key=bf788362-5f53-41d2-9230-e48586e76a06"
+wallet = "./authority.json"
+
+[test.validator]
+url = "https://api.mainnet-beta.solana.com"
+
+[[test.validator.clone]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+initialize = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/initialization.test.ts"
