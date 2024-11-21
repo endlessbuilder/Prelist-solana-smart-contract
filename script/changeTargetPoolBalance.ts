@@ -9,7 +9,7 @@ const targetPoolBalance = new anchor.BN(5e8);
 const feeWallet = new PublicKey("28N6ikf1wVNvrJZdzMQY8bgnu8uha9NnUttawk42DzA3");
 
 const changeTargetPoolBalance = async () => {
-    const newTargetPoolBalance = new anchor.BN(5e8);
+    const newTargetPoolBalance = new anchor.BN(5e8);  // 0.5 sol
     try {
 
         await program.methods.changeTargetPoolBalance(newTargetPoolBalance).accounts({}).signers([owner]).rpc();

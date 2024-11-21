@@ -8,11 +8,12 @@ use anchor_spl::{
     },
     token::{self, mint_to, Mint, MintTo, Token, TokenAccount, Transfer as SplTransfer},
 };
-use state::CreateTokenParams;
 use state::Platform;
+use state::TokenInfo;
+use state::CreateTokenParams;
 use state::PlatformInitParams;
 use state::SetTokenInfoParams;
-use state::TokenInfo;
+use state::LiquidityMigrationParams;
 
 mod constants;
 mod errors;
@@ -24,6 +25,7 @@ declare_id!("FhX8xc2ZjZ7byDuNSi1Jvctr8tgwPLd6859HhNSh38Rk");
 
 #[program]
 pub mod solana_pump_fun {
+
 
     use super::*;
 
@@ -121,23 +123,50 @@ pub mod solana_pump_fun {
         Ok(())
     }
 
-    pub fn withdraw_fees(ctx: Context<WithdrawFees>) -> Result<()> {
-        let platform = &mut ctx.accounts.platform;
-        let accumulated_fees = platform.accumulated_fees;
+    pub fn liquidity_migration(
+        ctx: Context<LiquidityMigration>,
+        liquidity_migration_params: LiquidityMigrationParams,
+    ) -> Result<()> {
 
-        **platform.to_account_info().try_borrow_mut_lamports()? -= accumulated_fees;
+        // Transfer sol amount from signer to token info account
+        msg!("transfer sol from token info to signer");
+        **ctx
+            .accounts
+            .token_info
+            .to_account_info()
+            .try_borrow_mut_lamports()? -= liquidity_migration_params.sol_amount;
         **ctx
             .accounts
             .signer
             .to_account_info()
-            .try_borrow_mut_lamports()? += accumulated_fees;
+            .try_borrow_mut_lamports()? += liquidity_migration_params.sol_amount;
 
-        platform.accumulated_fees = 0;
+        msg!("transfer token from token info to signer");
+        let mint_token_account_key = ctx.accounts.mint.key();
+        let seeds = &[
+            constants::seeds::TOKEN_ACCOUNT_SEED,
+            mint_token_account_key.as_ref(),
+            &[ctx.bumps.source_token_account],
+        ];
+        let signer = [&seeds[..]];
 
-        let fees_withdrawn_event = events::FeesWithdrawn {
-            amount: accumulated_fees,
-        };
-        emit!(fees_withdrawn_event);
+        // Transfer tokens to user
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                SplTransfer {
+                    from: ctx.accounts.source_token_account.to_account_info(),
+                    to: ctx.accounts.owner_token_account.to_account_info(),
+                    authority: ctx.accounts.source_token_account.to_account_info(),
+                },
+                &signer,
+            ),
+            liquidity_migration_params.token_amount,
+        )?;
+
+        let token_info = &mut ctx.accounts.token_info;
+        token_info.sol_reserve -= liquidity_migration_params.sol_amount;
+        token_info.token_reserve -= liquidity_migration_params.token_amount;
 
         Ok(())
     }
@@ -478,7 +507,8 @@ pub struct PlatformOperation<'info> {
 }
 
 #[derive(Accounts)]
-pub struct WithdrawFees<'info> {
+#[instruction(liquidity_migration_params: LiquidityMigrationParams)]
+pub struct LiquidityMigration<'info> {
     #[account(
         mut, 
         seeds=[constants::seeds::PLATFORM_SEED], 
@@ -489,7 +519,33 @@ pub struct WithdrawFees<'info> {
 
     pub signer: Signer<'info>,
 
+    #[account(mut)]
+    pub mint: Account<'info, Mint>,
+
+    #[account(
+        mut, 
+        constraint=mint.key() == token_info.token
+    )]
+    pub token_info: Account<'info, TokenInfo>,
+
+    #[account(
+        mut, 
+        seeds=[constants::seeds::TOKEN_ACCOUNT_SEED, mint.key().as_ref()], 
+        bump, 
+        token::mint=mint, 
+        token::authority=source_token_account
+    )]
+    pub source_token_account: Account<'info, TokenAccount>,
+
+    #[account(
+        mut, 
+        associated_token::mint=mint, 
+        associated_token::authority=signer
+    )]
+    pub owner_token_account: Account<'info, TokenAccount>,
+
     pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
 }
 
 #[derive(Accounts)]

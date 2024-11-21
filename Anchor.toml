@@ -31,3 +31,4 @@ changeVirtualSolAmount = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./scri
 changeTargetPoolBalance = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/changeTargetPoolBalance.ts"
 createToken = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/createToken.ts"
 buyToken = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/buyToken.ts"
+liquidityMigration = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/liquidityMigration.ts"

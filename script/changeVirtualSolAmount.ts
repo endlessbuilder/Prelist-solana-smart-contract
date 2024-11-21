@@ -9,7 +9,7 @@ const targetPoolBalance = new anchor.BN(5e8);
 const feeWallet = new PublicKey("28N6ikf1wVNvrJZdzMQY8bgnu8uha9NnUttawk42DzA3");
 
 const changeVirtualSolAmount = async () => {
-    const newVirtualSolAmount = new anchor.BN(2e8);
+    const newVirtualSolAmount = new anchor.BN(1e8); // 0.1 sol
     try {
 
         await program.methods.changeVirtualSolAmount(newVirtualSolAmount).accounts({}).signers([owner]).rpc();

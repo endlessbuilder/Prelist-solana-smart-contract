@@ -23,8 +23,8 @@ const seedStrings = {
 };
 
 export const tokenDetails = {
-    name: "Mock Token 04",
-    symbol: "MOCT04",
+    name: "Mock Token 05",
+    symbol: "MOCT05",
     uri: "www.example.com",
 };
 
