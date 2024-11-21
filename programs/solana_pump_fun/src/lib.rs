@@ -11,6 +11,7 @@ use anchor_spl::{
 use state::CreateTokenParams;
 use state::Platform;
 use state::PlatformInitParams;
+use state::SetTokenInfoParams;
 use state::TokenInfo;
 
 mod constants;
@@ -177,6 +178,25 @@ pub mod solana_pump_fun {
             &signer,
         );
         create_metadata_accounts_v3(metadata_ctx, token_data, false, true, None)?;
+
+        let token_created_event = events::TokenCreated {
+            token: ctx.accounts.mint.key(),
+        };
+        emit!(token_created_event);
+
+        Ok(())
+    }
+
+    pub fn set_token_info(
+        ctx: Context<SetTokenInfo>,
+        set_token_info_params: SetTokenInfoParams,
+    ) -> Result<()> {
+        let seeds = &[
+            constants::seeds::MINT_SEED,
+            set_token_info_params.name.as_bytes(),
+            &[ctx.bumps.mint],
+        ];
+        let signer = [&seeds[..]];
 
         // Second, initialize the token campaign params
         let token_info = &mut ctx.accounts.token_info;
@@ -478,8 +498,8 @@ pub struct CreateToken<'info> {
     #[account(
         mut, 
         seeds=[constants::seeds::PLATFORM_SEED], 
-        bump)
-    ]
+        bump
+    )]
     pub platform: Box<Account<'info, Platform>>,
 
     #[account(mut)]
@@ -499,6 +519,32 @@ pub struct CreateToken<'info> {
     ]
     pub mint: Box<Account<'info, Mint>>,
 
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+    pub token_metadata_program: Program<'info, Metaplex>,
+    pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+#[instruction(set_token_info_params: SetTokenInfoParams)]
+pub struct SetTokenInfo<'info> {
+    #[account(
+        mut, 
+        seeds=[constants::seeds::PLATFORM_SEED], 
+        bump
+    )]
+    pub platform: Box<Account<'info, Platform>>,
+
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds=[constants::seeds::MINT_SEED, set_token_info_params.name.as_bytes()],
+        bump, 
+    )]
+    pub mint: Box<Account<'info, Mint>>,
+
     #[account(
         init, 
         payer=signer, 
@@ -512,7 +558,7 @@ pub struct CreateToken<'info> {
     #[account(
         init, 
         payer=signer, 
-        seeds=[constants::seeds::TOKEN_SEED, create_token_params.name.as_ref()], 
+        seeds=[constants::seeds::TOKEN_SEED, set_token_info_params.name.as_ref()], 
         bump, 
         space=constants::general::DISCRIMINATOR_SIZE + TokenInfo::INIT_SPACE,)
     ]
