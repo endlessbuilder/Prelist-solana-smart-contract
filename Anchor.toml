@@ -26,5 +26,8 @@ address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 initialize = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/initialize.ts"
+changeTotalSupply = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/changeTotalSupply.ts"
+changeVirtualSolAmount = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/changeVirtualSolAmount.ts"
+changeTargetPoolBalance = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/changeTargetPoolBalance.ts"
 createToken = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/createToken.ts"
 buyToken = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 ./script/buyToken.ts"

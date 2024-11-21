@@ -8,23 +8,15 @@ const virtualSol = new anchor.BN(2e8);
 const targetPoolBalance = new anchor.BN(5e8);
 const feeWallet = new PublicKey("28N6ikf1wVNvrJZdzMQY8bgnu8uha9NnUttawk42DzA3");
 
-const initialize = async () => {
-
+const changeTargetPoolBalance = async () => {
+    const newTargetPoolBalance = new anchor.BN(5e8);
     try {
-        const platformParams = {
-            owner: owner.publicKey,
-            feeInBps,
-            totalSupply,
-            virtualSol,
-            targetPoolBalance,
-            feeWallet
-        };
 
-        await program.methods.initialize(platformParams).accounts({}).signers([owner]).rpc();
+        await program.methods.changeTargetPoolBalance(newTargetPoolBalance).accounts({}).signers([owner]).rpc();
 
         const account = await program.account.platform.fetch(platformKeypair.toBase58());
 
-        console.log(">>> platform account : ", account.feeWallet.toBase58());
+        console.log(">>> platform targetPoolBalance : ", account.targetPoolBalance.toString());
 
     } catch (error) {
         console.log(">>> error : ", error);
@@ -32,4 +24,4 @@ const initialize = async () => {
 
 }
 
-initialize();
+changeTargetPoolBalance();
