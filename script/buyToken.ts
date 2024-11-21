@@ -11,8 +11,14 @@ const feeWallet = new PublicKey("28N6ikf1wVNvrJZdzMQY8bgnu8uha9NnUttawk42DzA3");
 
 const buyTokens = async () => {
 
-    const solAmount = new anchor.BN(1e9 + 1e7);
+    const solAmount = new anchor.BN(1e8 + 1e6);
     try {
+        
+        let tokenInfo = await program.account.tokenInfo.fetch(
+            tokenInfoKeypair.toBase58()
+        );
+        console.log(">>> token info - solReserve : ", tokenInfo.solReserve.toString());
+
         const buyerTokenAccount = await spl.getOrCreateAssociatedTokenAccount(
             connection,
             owner,
@@ -43,7 +49,10 @@ const buyTokens = async () => {
 
         console.log(">>> ✅ buyTokens txId = ", txSignature);
 
-
+        tokenInfo = await program.account.tokenInfo.fetch(
+            tokenInfoKeypair.toBase58()
+        );
+        console.log(">>> token info - solReserve : ", tokenInfo.solReserve.toString());
         const balance = await connection.getTokenAccountBalance(buyerTokenAccount.address);
 
         console.log(">>> balance : ", balance);

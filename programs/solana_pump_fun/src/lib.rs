@@ -240,6 +240,10 @@ pub mod solana_pump_fun {
             !ctx.accounts.token_info.launched,
             errors::CustomErrors::AlreadyLaunched
         );
+        require!(
+            ctx.accounts.token_info.sol_reserve <= ctx.accounts.token_info.target_pool_balance,
+            errors::CustomErrors::BondingCurveBreached
+        );
 
         // sol_amount = 101
         // buy_fee = (101 * 100) / (10000 + 100) = 1
@@ -260,10 +264,6 @@ pub mod solana_pump_fun {
         ctx.accounts.token_info.sol_reserve += sol_amount_after_fee;
         ctx.accounts.token_info.token_reserve -= token_amount;
 
-        require!(
-            ctx.accounts.token_info.sol_reserve <= ctx.accounts.token_info.target_pool_balance,
-            errors::CustomErrors::BondingCurveBreached
-        );
 
         // Check the current market cap and launch the token if it's been hit
         if ctx.accounts.token_info.sol_reserve >= ctx.accounts.token_info.target_pool_balance {
