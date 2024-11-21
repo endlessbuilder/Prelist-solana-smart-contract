@@ -52,3 +52,9 @@ pub struct SetTokenInfoParams {
     pub symbol: String,
     pub uri: String,
 }
+
+#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
+pub struct LiquidityMigrationParams {
+    pub sol_amount: u64,
+    pub token_amount: u64,
+}

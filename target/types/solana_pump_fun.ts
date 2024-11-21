@@ -850,6 +850,192 @@ export type SolanaPumpFun = {
       ]
     },
     {
+      "name": "liquidityMigration",
+      "discriminator": [
+        58,
+        29,
+        2,
+        86,
+        25,
+        114,
+        201,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "platform",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  97,
+                  116,
+                  102,
+                  111,
+                  114,
+                  109
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "tokenInfo",
+          "writable": true
+        },
+        {
+          "name": "sourceTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ownerTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "liquidityMigrationParams",
+          "type": {
+            "defined": {
+              "name": "liquidityMigrationParams"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "sellTokens",
       "discriminator": [
         114,
@@ -1192,51 +1378,6 @@ export type SolanaPumpFun = {
           }
         }
       ]
-    },
-    {
-      "name": "withdrawFees",
-      "discriminator": [
-        198,
-        212,
-        171,
-        109,
-        144,
-        215,
-        174,
-        89
-      ],
-      "accounts": [
-        {
-          "name": "platform",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  112,
-                  108,
-                  97,
-                  116,
-                  102,
-                  111,
-                  114,
-                  109
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "signer",
-          "signer": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
     }
   ],
   "accounts": [
@@ -1505,6 +1646,22 @@ export type SolanaPumpFun = {
             "name": "token",
             "type": "pubkey"
           },
+          {
+            "name": "solAmount",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAmount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "liquidityMigrationParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "solAmount",
             "type": "u64"
