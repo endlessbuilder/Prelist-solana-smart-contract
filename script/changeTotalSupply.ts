@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { owner, platformKeypair, program } from "./setup";
+import { connection, owner, platformKeypair, program } from "./setup";
 
 const feeInBps = new anchor.BN(100); // 1%
 const totalSupply = new anchor.BN(100e9);
@@ -9,12 +9,21 @@ const targetPoolBalance = new anchor.BN(5e8);
 const feeWallet = new PublicKey("28N6ikf1wVNvrJZdzMQY8bgnu8uha9NnUttawk42DzA3");
 
 const changeTotalSupply = async () => {
-    const newTotalSupply = new anchor.BN(100e9); // 100 tokens
     try {
+        const newTotalSupply = new anchor.BN(1_000_000 * 1e9); // 1e9 tokens
 
-        await program.methods.changeTotalSupply(newTotalSupply).accounts({}).signers([owner]).rpc();
+        const txSignature = await program.methods.changeTotalSupply(newTotalSupply).accounts({}).signers([owner]).rpc();
 
-        const account = await program.account.platform.fetch(platformKeypair.toBase58());
+        let latestBlockhash = await connection.getLatestBlockhash("confirmed");
+        await connection.confirmTransaction({
+            signature: txSignature,
+            blockhash: latestBlockhash.blockhash,
+            lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+        });
+
+        console.log(">>> ✅ changeTotalSupply txId = ", txSignature);
+
+        const account = await program.account.platform.fetch(platformKeypair.toBase58(), "confirmed");
 
         console.log(">>> platform totalSupply : ", account.totalSupply.toString());
 

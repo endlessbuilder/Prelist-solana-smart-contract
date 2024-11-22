@@ -5,7 +5,7 @@ import { SolanaPumpFun } from "../target/types/solana_pump_fun";
 
 export const connection = new Connection(
     "https://devnet.helius-rpc.com/?api-key=bf788362-5f53-41d2-9230-e48586e76a06",
-    "finalized"
+    "confirmed"
 );
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
